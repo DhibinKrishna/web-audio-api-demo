@@ -1,144 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web Audio Api Demo</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <!-- Landing View -->
-        <div id="landing-view" class="view">
-            <h1>Web Audio Api Demo</h1>
-            <p class="landing-subtitle">Explore the Web Audio API</p>
-            <div class="mode-selection">
-                <button id="btn-demo" class="mode-btn">
-                    <span class="mode-icon">♪</span>
-                    <span class="mode-title">Demo</span>
-                    <span class="mode-desc">Explore sounds & effects</span>
-                </button>
-                <button id="btn-piano" class="mode-btn">
-                    <span class="mode-icon">♫</span>
-                    <span class="mode-title">Notes</span>
-                    <span class="mode-desc">Play notes</span>
-                </button>
+      <!-- Landing View -->
+      <div id="landing-view" class="view">
+        <h1>Web Audio Api Demo</h1>
+        <div class="mode-selection">
+          <button id="btn-demo" class="mode-btn">
+            <span class="mode-icon">♪</span>
+            <span class="mode-title">Demo</span>
+            <span class="mode-desc">Explore sounds & effects</span>
+          </button>
+          <button id="btn-piano" class="mode-btn">
+            <span class="mode-icon">♫</span>
+            <span class="mode-title">Notes</span>
+            <span class="mode-desc">Play notes</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Demo View -->
+      <div id="demo-view" class="view hidden">
+        <div class="sticky-header">
+          <button class="back-btn" data-target="landing-view">← Back</button>
+          <h1>Web Audio Api Demo</h1>
+
+          <div class="visualizer">
+            <canvas id="waveform"></canvas>
+          </div>
+
+          <div class="controls">
+            <div class="control-group">
+              <label for="frequency"
+                >Frequency: <span id="frequency-value">440</span>Hz</label
+              >
+              <input
+                type="range"
+                id="frequency"
+                min="20"
+                max="2000"
+                step="10"
+                value="440"
+              />
             </div>
+            <div class="control-group">
+              <label for="duration"
+                >Duration: <span id="duration-value">2</span>s</label
+              >
+              <input
+                type="range"
+                id="duration"
+                min="1"
+                max="5"
+                step="0.5"
+                value="2"
+              />
+            </div>
+          </div>
         </div>
 
-        <!-- Demo View -->
-        <div id="demo-view" class="view hidden">
-            <div class="sticky-header">
-                <button class="back-btn" data-target="landing-view">← Back</button>
-                <h1>Web Audio Api Demo</h1>
-
-                <div class="visualizer">
-                    <canvas id="waveform"></canvas>
-                </div>
-
-                <div class="controls">
-                    <div class="control-group">
-                        <label for="frequency">Frequency: <span id="frequency-value">440</span>Hz</label>
-                        <input type="range" id="frequency" min="20" max="2000" step="10" value="440">
-                    </div>
-                    <div class="control-group">
-                        <label for="duration">Duration: <span id="duration-value">2</span>s</label>
-                        <input type="range" id="duration" min="1" max="5" step="0.5" value="2">
-                    </div>
-                </div>
+        <div class="categories">
+          <section class="category">
+            <h2>Basic Waveforms</h2>
+            <div class="buttons">
+              <button data-sound="sine">Sine</button>
+              <button data-sound="square">Square</button>
+              <button data-sound="sawtooth">Sawtooth</button>
+              <button data-sound="triangle">Triangle</button>
             </div>
+          </section>
 
-            <div class="categories">
-                <section class="category">
-                    <h2>Basic Waveforms</h2>
-                    <div class="buttons">
-                        <button data-sound="sine">Sine</button>
-                        <button data-sound="square">Square</button>
-                        <button data-sound="sawtooth">Sawtooth</button>
-                        <button data-sound="triangle">Triangle</button>
-                    </div>
-                </section>
-
-                <section class="category">
-                    <h2>Filtered Sounds</h2>
-                    <div class="buttons">
-                        <button data-sound="lowpass">Lowpass</button>
-                        <button data-sound="highpass">Highpass</button>
-                        <button data-sound="bandpass">Bandpass</button>
-                        <button data-sound="notch">Notch</button>
-                    </div>
-                </section>
-
-                <section class="category">
-                    <h2>Envelope Shapes</h2>
-                    <div class="buttons">
-                        <button data-sound="pluck">Pluck</button>
-                        <button data-sound="pad">Pad</button>
-                        <button data-sound="stab">Stab</button>
-                        <button data-sound="swell">Swell</button>
-                    </div>
-                </section>
-
-                <section class="category">
-                    <h2>Modulation Effects</h2>
-                    <div class="buttons">
-                        <button data-sound="vibrato">Vibrato</button>
-                        <button data-sound="tremolo">Tremolo</button>
-                        <button data-sound="fmBass">FM Bass</button>
-                        <button data-sound="fmBell">FM Bell</button>
-                    </div>
-                </section>
-
-                <section class="category">
-                    <h2>Sound Effects</h2>
-                    <div class="buttons">
-                        <button data-sound="laser">Laser</button>
-                        <button data-sound="powerUp">Power Up</button>
-                        <button data-sound="alarm">Alarm</button>
-                        <button data-sound="noiseBurst">Noise Burst</button>
-                    </div>
-                </section>
+          <section class="category">
+            <h2>Filtered Sounds</h2>
+            <div class="buttons">
+              <button data-sound="lowpass">Lowpass</button>
+              <button data-sound="highpass">Highpass</button>
+              <button data-sound="bandpass">Bandpass</button>
+              <button data-sound="notch">Notch</button>
             </div>
+          </section>
+
+          <section class="category">
+            <h2>Envelope Shapes</h2>
+            <div class="buttons">
+              <button data-sound="pluck">Pluck</button>
+              <button data-sound="pad">Pad</button>
+              <button data-sound="stab">Stab</button>
+              <button data-sound="swell">Swell</button>
+            </div>
+          </section>
+
+          <section class="category">
+            <h2>Modulation Effects</h2>
+            <div class="buttons">
+              <button data-sound="vibrato">Vibrato</button>
+              <button data-sound="tremolo">Tremolo</button>
+              <button data-sound="fmBass">FM Bass</button>
+              <button data-sound="fmBell">FM Bell</button>
+            </div>
+          </section>
+
+          <section class="category">
+            <h2>Sound Effects</h2>
+            <div class="buttons">
+              <button data-sound="laser">Laser</button>
+              <button data-sound="powerUp">Power Up</button>
+              <button data-sound="alarm">Alarm</button>
+              <button data-sound="noiseBurst">Noise Burst</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Piano View -->
+      <div id="piano-view" class="view hidden">
+        <button class="back-btn" data-target="landing-view">← Back</button>
+
+        <h1>Notes</h1>
+        <p class="piano-subtitle">Play the ascending scale</p>
+
+        <div class="controls piano-controls">
+          <div class="control-group">
+            <label for="piano-frequency"
+              >Base Frequency:
+              <span id="piano-frequency-value">262</span>Hz</label
+            >
+            <input
+              type="range"
+              id="piano-frequency"
+              min="100"
+              max="1000"
+              step="1"
+              value="262"
+            />
+          </div>
+          <div class="control-group">
+            <label for="piano-duration"
+              >Duration: <span id="piano-duration-value">1</span>s</label
+            >
+            <input
+              type="range"
+              id="piano-duration"
+              min="0.1"
+              max="2"
+              step="0.1"
+              value="1"
+            />
+          </div>
         </div>
 
-        <!-- Piano View -->
-        <div id="piano-view" class="view hidden">
-            <button class="back-btn" data-target="landing-view">← Back</button>
-
-            <h1>Piano</h1>
-            <p class="piano-subtitle">Play the Sargam scale</p>
-
-            <div class="controls piano-controls">
-                <div class="control-group">
-                    <label for="piano-frequency">Base Frequency: <span id="piano-frequency-value">262</span>Hz</label>
-                    <input type="range" id="piano-frequency" min="100" max="1000" step="1" value="262">
-                </div>
-                <div class="control-group">
-                    <label for="piano-duration">Duration: <span id="piano-duration-value">0.5</span>s</label>
-                    <input type="range" id="piano-duration" min="0.1" max="2" step="0.1" value="0.5">
-                </div>
-            </div>
-
-            <div class="waveform-selector">
-                <button data-wave="sine" class="wave-btn active">Sine</button>
-                <button data-wave="square" class="wave-btn">Square</button>
-                <button data-wave="sawtooth" class="wave-btn">Sawtooth</button>
-                <button data-wave="triangle" class="wave-btn">Triangle</button>
-            </div>
-
-            <div class="piano-keys">
-                <button class="piano-key" data-note="sa" data-freq="261.63"></button>
-                <button class="piano-key" data-note="re" data-freq="293.66"></button>
-                <button class="piano-key" data-note="ga" data-freq="329.63"></button>
-                <button class="piano-key" data-note="ma" data-freq="349.23"></button>
-                <button class="piano-key" data-note="pa" data-freq="392.00"></button>
-                <button class="piano-key" data-note="da" data-freq="440.00"></button>
-                <button class="piano-key" data-note="ni" data-freq="493.88"></button>
-                <button class="piano-key" data-note="sa2" data-freq="523.25"></button>
-            </div>
+        <div class="waveform-selector">
+          <button data-wave="sine" class="wave-btn active">Sine</button>
+          <button data-wave="square" class="wave-btn">Square</button>
+          <button data-wave="sawtooth" class="wave-btn">Sawtooth</button>
+          <button data-wave="triangle" class="wave-btn">Triangle</button>
         </div>
+
+        <div class="piano-keys">
+          <button class="piano-key" data-note="sa" data-freq="261.63"></button>
+          <button class="piano-key" data-note="re" data-freq="293.66"></button>
+          <button class="piano-key" data-note="ga" data-freq="329.63"></button>
+          <button class="piano-key" data-note="ma" data-freq="349.23"></button>
+          <button class="piano-key" data-note="pa" data-freq="392.00"></button>
+          <button class="piano-key" data-note="da" data-freq="440.00"></button>
+          <button class="piano-key" data-note="ni" data-freq="493.88"></button>
+          <button class="piano-key" data-note="sa2" data-freq="523.25"></button>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
