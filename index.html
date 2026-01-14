@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web Audio Api Demo</title>
+    <title>Web Audio API Demo</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
       <!-- Landing View -->
       <div id="landing-view" class="view">
-        <h1>Web Audio Api Demo</h1>
+        <h1>Web Audio API Demo</h1>
         <div class="mode-selection">
-          <button id="btn-demo" class="mode-btn">
-            <span class="mode-icon">♪</span>
+          <button type="button" id="btn-demo" class="mode-btn" aria-label="Demo mode: Explore sounds and effects">
+            <span class="mode-icon" aria-hidden="true">♪</span>
             <span class="mode-title">Demo</span>
             <span class="mode-desc">Explore sounds & effects</span>
           </button>
-          <button id="btn-piano" class="mode-btn">
-            <span class="mode-icon">♫</span>
+          <button type="button" id="btn-piano" class="mode-btn" aria-label="Notes mode: Play musical notes">
+            <span class="mode-icon" aria-hidden="true">♫</span>
             <span class="mode-title">Notes</span>
             <span class="mode-desc">Play notes</span>
           </button>
@@ -29,7 +29,7 @@
       <div id="demo-view" class="view hidden">
         <div class="sticky-header">
           <button class="back-btn" data-target="landing-view">← Back</button>
-          <h1>Web Audio Api Demo</h1>
+          <h1>Web Audio API Demo</h1>
 
           <div class="visualizer">
             <canvas id="waveform"></canvas>
