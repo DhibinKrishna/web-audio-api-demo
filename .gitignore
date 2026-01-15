@@ -1,4 +1,6 @@
 .env
 .mcp.json
-.claude/
+.claude/settings.local.json
+.claude/*.local.*
 .DS_Store
+.playwright-mcp
