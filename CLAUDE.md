@@ -104,6 +104,10 @@ Each category demonstrates different Web Audio API techniques:
 5. Add button with `data-sound="xxx"` attribute in `index.html`
 6. Optionally add category-specific button styling in `styles.css`
 
+## Git Workflow
+
+When the user asks to commit a specific change, first check for other uncommitted changes (staged, unstaged, or untracked). If other changes exist, inform the user before committing so they can choose to combine everything into a single commit.
+
 ## Maintenance
 
 When making significant changes to this codebase (new features, architectural changes, new controls), update this CLAUDE.md file to reflect those changes.
