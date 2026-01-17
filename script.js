@@ -683,17 +683,7 @@ const pianoFrequencyValue = document.getElementById('piano-frequency-value');
 const pianoDurationSlider = document.getElementById('piano-duration');
 const pianoDurationValue = document.getElementById('piano-duration-value');
 
-// Semitone map relative to Sa
-const semitoneMap = {
-    'sa': 0,
-    're': 2,
-    'ga': 4,
-    'ma': 5,
-    'pa': 7,
-    'da': 9,
-    'ni': 11,
-    'sa2': 12
-};
+// Use SEMITONE_MAP from audio-utils.js for consistency
 
 function updatePianoKeyLabels() {
     if (!pianoFrequencySlider) return;
@@ -701,9 +691,8 @@ function updatePianoKeyLabels() {
     
     document.querySelectorAll('.piano-key').forEach(key => {
         const note = key.dataset.note;
-        if (semitoneMap.hasOwnProperty(note)) {
-            const semitones = semitoneMap[note];
-            const freq = baseFreq * Math.pow(2, semitones / 12);
+        if (SEMITONE_MAP.hasOwnProperty(note)) {
+            const freq = calculateFrequency(baseFreq, SEMITONE_MAP[note]);
             key.textContent = Math.round(freq);
         }
     });
@@ -755,10 +744,9 @@ function playPianoNote(frequency) {
 // Helper to trigger a piano key
 function triggerKey(key) {
     const note = key.dataset.note;
-    if (semitoneMap.hasOwnProperty(note) && pianoFrequencySlider) {
+    if (SEMITONE_MAP.hasOwnProperty(note) && pianoFrequencySlider) {
         const baseFreq = parseFloat(pianoFrequencySlider.value);
-        const semitones = semitoneMap[note];
-        const freq = baseFreq * Math.pow(2, semitones / 12);
+        const freq = calculateFrequency(baseFreq, SEMITONE_MAP[note]);
         playPianoNote(freq);
     } else {
         const freq = parseFloat(key.dataset.freq);
@@ -779,4 +767,36 @@ document.querySelectorAll('.piano-key').forEach(key => {
             triggerKey(key);
         }
     });
+});
+
+// Keyboard mapping for piano keys
+const keyboardToNote = {
+    'a': 'sa',
+    's': 're',
+    'd': 'ga',
+    'f': 'ma',
+    'j': 'pa',
+    'k': 'da',
+    'l': 'ni',
+    ';': 'sa2'
+};
+
+document.addEventListener('keydown', (e) => {
+    // Only respond when piano view is visible
+    const pianoView = document.getElementById('piano-view');
+    if (pianoView.classList.contains('hidden')) return;
+
+    // Ignore if typing in an input
+    if (e.target.tagName === 'INPUT') return;
+
+    const note = keyboardToNote[e.key.toLowerCase()];
+    if (note) {
+        const key = document.querySelector(`.piano-key[data-note="${note}"]`);
+        if (key) {
+            triggerKey(key);
+            // Visual feedback
+            key.classList.add('active');
+            setTimeout(() => key.classList.remove('active'), 100);
+        }
+    }
 });

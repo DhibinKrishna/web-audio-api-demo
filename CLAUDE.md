@@ -104,6 +104,35 @@ Each category demonstrates different Web Audio API techniques:
 5. Add button with `data-sound="xxx"` attribute in `index.html`
 6. Optionally add category-specific button styling in `styles.css`
 
+## Testing
+
+### Running Tests
+
+Open `test.html` in a browser to run the assertion-based test suite.
+
+### Test Structure
+
+- **audio-utils.js** - Pure utility functions extracted for testability
+- **test.html** - Browser-based test runner with assertions
+
+### Adding New Tests
+
+1. Add test cases inside a `suite()` block in `test.html`
+2. Use these assertion helpers:
+   - `assertEqual(actual, expected)` - Strict equality
+   - `assertApprox(actual, expected, tolerance)` - Floating point comparison
+   - `assertThrows(fn)` - Verify function throws an error
+   - `assert(condition)` - Boolean assertion
+
+### What's Tested
+
+- `calculateFrequency()` - Semitone to frequency conversion
+- `getNoteFrequency()` - Sargam note frequency lookup
+- `SEMITONE_MAP` - Note-to-semitone mapping
+- `clamp()` - Value clamping utility
+- `isAudibleFrequency()` - Audible range validation
+- `getAllNoteFrequencies()` - Full scale frequency generation
+
 ## Git Workflow
 
 When the user asks to commit a specific change, first check for other uncommitted changes (staged, unstaged, or untracked). If other changes exist, inform the user before committing so they can choose to combine everything into a single commit.
@@ -111,3 +140,7 @@ When the user asks to commit a specific change, first check for other uncommitte
 ## Maintenance
 
 When making significant changes to this codebase (new features, architectural changes, new controls), update this CLAUDE.md file to reflect those changes.
+
+## Working Style
+
+- Always ask clarifying questions when there are multiple valid approaches to a task.

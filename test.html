@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Utils - Tests</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        h1 {
+            margin-bottom: 1.5rem;
+            color: #00d4ff;
+        }
+        .test-suite {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .test-suite h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+        .test {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .test:last-child {
+            border-bottom: none;
+        }
+        .test-status {
+            font-size: 1.2rem;
+        }
+        .test-name {
+            flex: 1;
+        }
+        .test-details {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .pass { color: #4ade80; }
+        .fail { color: #f87171; }
+        .summary {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #16213e;
+            border-radius: 8px;
+            display: flex;
+            gap: 2rem;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-count {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .summary-label {
+            font-size: 0.85rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Utils Tests</h1>
+    <div id="results"></div>
+    <div id="summary" class="summary"></div>
+
+    <script src="audio-utils.js"></script>
+    <script>
+        // ==========================================
+        // Simple Test Runner
+        // ==========================================
+
+        const results = { passed: 0, failed: 0, tests: [] };
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(
+                    message || `Expected ${expected}, got ${actual}`
+                );
+            }
+        }
+
+        function assertApprox(actual, expected, tolerance = 0.01, message) {
+            const diff = Math.abs(actual - expected);
+            if (diff > tolerance) {
+                throw new Error(
+                    message || `Expected ~${expected}, got ${actual} (diff: ${diff})`
+                );
+            }
+        }
+
+        function assertThrows(fn, message) {
+            let threw = false;
+            try {
+                fn();
+            } catch (e) {
+                threw = true;
+            }
+            if (!threw) {
+                throw new Error(message || 'Expected function to throw');
+            }
+        }
+
+        function test(name, fn) {
+            try {
+                fn();
+                results.passed++;
+                results.tests.push({ name, passed: true });
+            } catch (error) {
+                results.failed++;
+                results.tests.push({ name, passed: false, error: error.message });
+            }
+        }
+
+        function suite(name, fn) {
+            results.currentSuite = name;
+            fn();
+        }
+
+        // ==========================================
+        // Test Suites
+        // ==========================================
+
+        suite('calculateFrequency', () => {
+            test('returns base frequency for 0 semitones', () => {
+                assertEqual(calculateFrequency(440, 0), 440);
+            });
+
+            test('doubles frequency for 12 semitones (one octave)', () => {
+                assertEqual(calculateFrequency(440, 12), 880);
+            });
+
+            test('halves frequency for -12 semitones', () => {
+                assertEqual(calculateFrequency(440, -12), 220);
+            });
+
+            test('calculates correct frequency for 7 semitones (perfect fifth)', () => {
+                // 440 * 2^(7/12) ≈ 659.255
+                assertApprox(calculateFrequency(440, 7), 659.255, 0.01);
+            });
+
+            test('works with different base frequencies', () => {
+                assertEqual(calculateFrequency(262, 12), 524);
+            });
+
+            test('throws error for zero base frequency', () => {
+                assertThrows(() => calculateFrequency(0, 5));
+            });
+
+            test('throws error for negative base frequency', () => {
+                assertThrows(() => calculateFrequency(-100, 5));
+            });
+        });
+
+        suite('getNoteFrequency', () => {
+            test('returns base frequency for Sa', () => {
+                assertEqual(getNoteFrequency('sa', 262), 262);
+            });
+
+            test('returns octave frequency for Sa2', () => {
+                assertEqual(getNoteFrequency('sa2', 262), 524);
+            });
+
+            test('calculates Pa correctly (7 semitones)', () => {
+                // 262 * 2^(7/12) ≈ 392.56
+                assertApprox(getNoteFrequency('pa', 262), 392.56, 0.1);
+            });
+
+            test('is case-insensitive', () => {
+                assertEqual(getNoteFrequency('SA', 262), getNoteFrequency('sa', 262));
+            });
+
+            test('throws error for unknown note', () => {
+                assertThrows(() => getNoteFrequency('xyz', 262));
+            });
+        });
+
+        suite('SEMITONE_MAP', () => {
+            test('has 8 notes', () => {
+                assertEqual(Object.keys(SEMITONE_MAP).length, 8);
+            });
+
+            test('Sa is 0 semitones', () => {
+                assertEqual(SEMITONE_MAP['sa'], 0);
+            });
+
+            test('Sa2 is 12 semitones (one octave)', () => {
+                assertEqual(SEMITONE_MAP['sa2'], 12);
+            });
+
+            test('Pa is 7 semitones (perfect fifth)', () => {
+                assertEqual(SEMITONE_MAP['pa'], 7);
+            });
+
+            test('Ma is 5 semitones (perfect fourth)', () => {
+                assertEqual(SEMITONE_MAP['ma'], 5);
+            });
+        });
+
+        suite('clamp', () => {
+            test('returns value when within range', () => {
+                assertEqual(clamp(50, 0, 100), 50);
+            });
+
+            test('returns min when value is below', () => {
+                assertEqual(clamp(-10, 0, 100), 0);
+            });
+
+            test('returns max when value is above', () => {
+                assertEqual(clamp(150, 0, 100), 100);
+            });
+
+            test('works with negative ranges', () => {
+                assertEqual(clamp(-5, -10, -1), -5);
+            });
+        });
+
+        suite('isAudibleFrequency', () => {
+            test('returns true for 440Hz (A4)', () => {
+                assert(isAudibleFrequency(440));
+            });
+
+            test('returns true for 20Hz (lower bound)', () => {
+                assert(isAudibleFrequency(20));
+            });
+
+            test('returns true for 20000Hz (upper bound)', () => {
+                assert(isAudibleFrequency(20000));
+            });
+
+            test('returns false for 10Hz (below audible)', () => {
+                assert(!isAudibleFrequency(10));
+            });
+
+            test('returns false for 25000Hz (above audible)', () => {
+                assert(!isAudibleFrequency(25000));
+            });
+        });
+
+        suite('getAllNoteFrequencies', () => {
+            test('returns object with all 8 notes', () => {
+                const freqs = getAllNoteFrequencies(262);
+                assertEqual(Object.keys(freqs).length, 8);
+            });
+
+            test('Sa frequency equals base frequency', () => {
+                const freqs = getAllNoteFrequencies(262);
+                assertEqual(freqs.sa, 262);
+            });
+
+            test('Sa2 frequency is double base frequency', () => {
+                const freqs = getAllNoteFrequencies(262);
+                assertEqual(freqs.sa2, 524);
+            });
+
+            test('all frequencies are positive numbers', () => {
+                const freqs = getAllNoteFrequencies(262);
+                for (const freq of Object.values(freqs)) {
+                    assert(typeof freq === 'number' && freq > 0);
+                }
+            });
+        });
+
+        // ==========================================
+        // Render Results
+        // ==========================================
+
+        function renderResults() {
+            const container = document.getElementById('results');
+
+            // Group tests by suite
+            const suites = {};
+            let currentSuite = 'General';
+
+            results.tests.forEach(test => {
+                if (!suites[currentSuite]) {
+                    suites[currentSuite] = [];
+                }
+                suites[currentSuite].push(test);
+            });
+
+            // Render each suite
+            let html = '';
+            const suiteNames = ['calculateFrequency', 'getNoteFrequency', 'SEMITONE_MAP', 'clamp', 'isAudibleFrequency', 'getAllNoteFrequencies'];
+            let testIndex = 0;
+
+            suiteNames.forEach(suiteName => {
+                html += `<div class="test-suite"><h2>${suiteName}</h2>`;
+
+                // Find tests for this suite (based on order)
+                const suiteTestCounts = {
+                    'calculateFrequency': 7,
+                    'getNoteFrequency': 5,
+                    'SEMITONE_MAP': 5,
+                    'clamp': 4,
+                    'isAudibleFrequency': 5,
+                    'getAllNoteFrequencies': 4
+                };
+
+                const count = suiteTestCounts[suiteName] || 0;
+                for (let i = 0; i < count && testIndex < results.tests.length; i++) {
+                    const test = results.tests[testIndex++];
+                    const statusClass = test.passed ? 'pass' : 'fail';
+                    const statusIcon = test.passed ? '✓' : '✗';
+
+                    html += `
+                        <div class="test">
+                            <span class="test-status ${statusClass}">${statusIcon}</span>
+                            <span class="test-name">${test.name}</span>
+                            ${test.error ? `<span class="test-details fail">${test.error}</span>` : ''}
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+            });
+
+            container.innerHTML = html;
+
+            // Render summary
+            const summary = document.getElementById('summary');
+            const total = results.passed + results.failed;
+            summary.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-count">${total}</div>
+                    <div class="summary-label">Total Tests</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-count pass">${results.passed}</div>
+                    <div class="summary-label">Passed</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-count fail">${results.failed}</div>
+                    <div class="summary-label">Failed</div>
+                </div>
+            `;
+        }
+
+        renderResults();
+    </script>
+</body>
+</html>
